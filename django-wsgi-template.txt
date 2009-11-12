@@ -1,0 +1,24 @@
+#!{{ project_shortname }}/bin/python
+import site
+
+appname = "{{ project_shortname }}"
+site.addsitedir('/home/projects/envs/%s/lib/python{{ python_version }}/site-packages/' % appname)
+
+import sys, os
+
+os.environ['PATH'] = '{{ paths.virtualenvs }}/%s/bin:%s' % (appname, os.environ.get('PATH', '/bin:/usr/bin'))
+os.environ['VIRTUAL_ENV'] = '{{ paths.virtualenvs }}/%s' % appname
+os.environ['PYTHON_EGG_CACHE'] = '{{ paths.virtualenvs }}/%s/egg_cache' % appname
+
+# Add a custom Python path.
+sys.path.insert(0, "{{ paths.django_projects }}")
+sys.path.insert(0, "{{ paths.django_projects }}/%s" % appname)
+
+# Switch to the directory of your project (optional).
+os.chdir("{{ paths.django_projects }}/%s" % appname)
+
+# Set the DJANGO_SETTINGS_MODULE environment variable.
+os.environ['DJANGO_SETTINGS_MODULE'] = "%s.settings" % appname
+
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()

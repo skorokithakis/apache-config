@@ -1,0 +1,19 @@
+#!{{ envs }}/{{ short_name }}/bin/python
+import sys, os
+
+os.environ['PATH'] = '{{ envs }}/{{ short_name }}/bin:' + os.environ.get('PATH', '/bin:/usr/bin')
+os.environ['VIRTUAL_ENV'] = '{{ envs }}/{{ short_name }}'
+os.environ['PYTHON_EGG_CACHE'] = '{{ envs }}/{{ short_name }}/egg_cache'
+
+# Add a custom Python path.
+sys.path.insert(0, "{{ djangoprojects }}")
+sys.path.insert(0, "{{ djangoprojects }}/{{ short_name }}")
+
+# Switch to the directory of your project. (Optional.)
+os.chdir("{{ djangoprojects }}/{{ short_name }}")
+
+# Set the DJANGO_SETTINGS_MODULE environment variable.
+os.environ['DJANGO_SETTINGS_MODULE'] = "{{ short_name }}.settings"
+
+from django.core.servers.fastcgi import runfastcgi
+runfastcgi(["method=threaded"])

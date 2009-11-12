@@ -1,0 +1,35 @@
+<VirtualHost *:80>
+    ServerAdmin support@{{ domain }}
+
+    ServerName {{ domain }}
+    ServerAlias www.{{ domain }}
+    DocumentRoot {{ paths.www }}/{{ project_shortname }}
+
+    ErrorLog /var/log/apache2/error.{{ project_shortname }}.log
+
+    WSGIDaemonProcess {{ project_shortname }} processes=2 maximum-requests=500 threads=15
+    WSGIProcessGroup {{ project_shortname }}
+    WSGIScriptAlias / {{ paths.www }}/{{ project_shortname }}/django.wsgi
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
+
+    CustomLog /var/log/apache2/access.{{ project_shortname }}.log combined
+    ServerSignature On
+
+    Alias /admin-media/ {{ paths.www }}/{{ project_shortname }}/admin-media/
+    <Directory {{ paths.www }}/{{ project_shortname }}/admin-media/>
+        Order deny,allow
+        Allow from all
+        Options -Indexes
+    </Directory>
+
+    Alias /media/ {{ paths.www }}/{{ project_shortname }}/media/
+    <Directory {{ paths.www }}/{{ project_shortname }}/media/>
+        Order deny,allow
+        Allow from all
+        Options -Indexes
+    </Directory>
+
+</VirtualHost>
