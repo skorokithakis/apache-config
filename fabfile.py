@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from fabric.api import env, run, sudo, local, cd, hosts, runs_once, prompt
+from fabric.api import env, run, sudo, cd, runs_once, prompt
 from fabric.contrib.files import exists, upload_template
 
 import posixpath
@@ -21,6 +21,7 @@ def sampleserver():
 
 @runs_once
 def get_details():
+    """Request details for the project."""
     if not hasattr(env, "short_name"):
         env.short_name = prompt("Project's short name:")
 
