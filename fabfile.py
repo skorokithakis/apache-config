@@ -81,37 +81,26 @@ def apache():
                "domain": env.site_domain,
                }
 
-    debian_path = "/etc/apache2/sites-available/"
-    rhel_path = "/etc/httpd/conf.d/"
+    apache_paths = ["/etc/apache2/sites-available/", "/etc/httpd/conf.d/"]
+    miss_count = 0
+    for path in apache_paths:
+        if os.path.exists(path):
+            with cd(path):
+                if not exists(env.short_name):
+                    upload_template("apache-django-template.txt",
+                    env.short_name,
+                    context,
+                    use_jinja=True,
+                    use_sudo=True)
+                else:
+                    print "Apache conf file already exists."
+        else:
+            miss_count += 1
 
-    if os.path.exists(debian_path):
-        with cd(debian_path):
-            if not exists(env.short_name):
-                upload_template("apache-django-template.txt",
-                                env.short_name,
-                                context,
-                                use_jinja=True,
-                                use_sudo=True)
-            else:
-                print "Apache conf file already exists."
-                return
-
-    elif os.path.exists(rhel_path):
-        with cd(rhel_path):
-            if not exists(env.short_name):
-                upload_template("apache-django-template.txt",
-                                env.short_name,
-                                context,
-                                use_jinja=True,
-                                use_sudo=True)
-
-            else:
-                print "Apache conf file already exists."
-                return
-
-    else:
-        print "Apache path not found"
+    if len(apache_paths) is miss_count:
+        print "Apache not found."
         return
+
     sudo("chmod 644 %s" % env.short_name)
     sudo("a2ensite %s" % env.short_name)
     sudo("apache2ctl restart")
