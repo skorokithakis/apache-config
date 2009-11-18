@@ -3,6 +3,7 @@ from fabric.api import env, run, sudo, cd, runs_once, prompt
 from fabric.contrib.files import exists, upload_template
 
 import posixpath
+import os
 
 ROOT_PATH = "/home/projects/"
 
