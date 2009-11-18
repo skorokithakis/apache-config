@@ -80,7 +80,7 @@ def apache():
                "domain": env.site_domain,
                }
 
-    debian_path = "/etc/apache2/sites-available/")
+    debian_path = "/etc/apache2/sites-available/"
     rhel_path = "/etc/httpd/conf.d/"
 
     if os.path.exists(debian_path):
