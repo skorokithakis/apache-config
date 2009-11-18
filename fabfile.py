@@ -82,7 +82,7 @@ def apache():
                }
 
     apache_paths = ["/etc/apache2/sites-available/", "/etc/httpd/conf.d/"]
-    miss_count = 0
+
     for path in apache_paths:
         if os.path.exists(path):
             with cd(path):
@@ -92,12 +92,11 @@ def apache():
                     context,
                     use_jinja=True,
                     use_sudo=True)
+                    break
                 else:
                     print "Apache conf file already exists."
-        else:
-            miss_count += 1
-
-    if len(apache_paths) is miss_count:
+                    return
+    else:
         print "Apache not found."
         return
 
