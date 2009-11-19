@@ -3,6 +3,7 @@ from fabric.api import env, run, sudo, cd, runs_once, prompt
 from fabric.contrib.files import exists, upload_template
 
 import posixpath
+import os
 
 ROOT_PATH = "/home/projects/"
 
@@ -80,17 +81,25 @@ def apache():
                "domain": env.site_domain,
                }
 
-    with cd("/etc/apache2/sites-available/"):
-        if not exists(env.short_name):
-            upload_template("apache-django-template.txt",
-                            env.short_name,
-                            context,
-                            use_jinja=True,
-                            use_sudo=True)
-        else:
-            print "Apache conf file already exists."
-            return
+    apache_paths = ["/etc/apache2/sites-available/", "/etc/httpd/conf.d/"]
 
-        sudo("chmod 644 %s" % env.short_name)
-        sudo("a2ensite %s" % env.short_name)
-        sudo("apache2ctl restart")
+    for path in apache_paths:
+        if os.path.exists(path):
+            with cd(path):
+                if not exists(env.short_name):
+                    upload_template("apache-django-template.txt",
+                    env.short_name,
+                    context,
+                    use_jinja=True,
+                    use_sudo=True)
+                    break
+                else:
+                    print "Apache conf file already exists."
+                    return
+    else:
+        print "Apache not found."
+        return
+
+    sudo("chmod 644 %s" % env.short_name)
+    sudo("a2ensite %s" % env.short_name)
+    sudo("apache2ctl restart")
